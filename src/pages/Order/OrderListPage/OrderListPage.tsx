@@ -9,6 +9,7 @@ import useSWR from 'swr';
 import {orderApi} from "../../../api";
 import {Order} from "../../../model/modelType";
 import OrderFormModal from "../../../components/Modal/OrderFormModal";
+import DefaultButton from "../../../components/Button/defaultButton";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -36,13 +37,6 @@ const StyledPagination = styled(Pagination)`
   }
 `
 
-const StyledButton = styled(Button)(({theme}) =>`
-  float: right;
-  background-color: ${theme.palette.common.black};
-  :hover {
-    background-color: gray;
-  }
-`)
 const COUNT_PER_PAGE = 20;
 
 function getTotalCount(length: number){
@@ -77,7 +71,7 @@ function OrderListPage() {
         <Grid item xs={2} />
         <Grid item xs={8}>
           <Typography variant="h5" sx={{textAlign: "left", marginTop: "1.5em"}}> 주문 현황 </Typography>
-          <StyledButton variant="contained" onClick={() => setModalOpen(true)}>주문 생성하기</StyledButton>
+          <DefaultButton onClickMethod={() => setModalOpen(true)} text={"주문 생성하기"}></DefaultButton>
           <OrderFormModal open={modalOpen} setOpen={setModalOpen}/>
         </Grid>
         <Grid item xs={2}>
