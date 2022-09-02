@@ -1,95 +1,109 @@
-import React from 'react';
-import {styled} from "@mui/material";
+import React, {useEffect, useRef, useState} from 'react';
+import {Pagination, styled} from "@mui/material";
 import { tableCellClasses } from '@mui/material/TableCell';
+import { paginationClasses } from "@mui/material";
 import {
   Box, Paper, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography,TableContainer
 } from '@mui/material';
+import useSWR from 'swr';
+import {getOrderList} from "../../../api/orderApi";
+import {Order} from "../../../model/modelType";
 
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
 
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
+
+const StyledPagination = styled(Pagination)`
+  .${paginationClasses.ul} {
+    justify-content: center;
+  }
+`
+const COUNT_PER_PAGE = 20;
+
+function getTotalCount(length: number){
+  const tempTotalCount = length / COUNT_PER_PAGE;
+    return tempTotalCount === Math.floor(tempTotalCount) ? tempTotalCount: Math.floor(tempTotalCount) + 1;
+}
 
 function OrderListPage() {
-  function createData(
-    name: number,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number,
-  ) {
-    return {
-      name, calories, fat, carbs, protein,
-    };
+  const { data: orders, error } = useSWR<Order[], Error>('orders', getOrderList)
+  const [page, setPage] = useState(1);
+  const [startIdx, setStartIdx] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
+  const onChangePage = (event: React.ChangeEvent<unknown>, targetPage: number) => {
+    setPage(targetPage);
+    setStartIdx((targetPage - 1) * COUNT_PER_PAGE);
   }
 
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
+  useEffect(() => {
+    if (orders) {
+      setTotalCount(getTotalCount(orders.length));
+    }
+  }, [orders])
 
-  const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-      border: 0,
-    },
-  }));
+  console.log(startIdx, startIdx + COUNT_PER_PAGE);
 
-  const rows = [
-    createData(1, 159, 6.0, 24, 4.0),
-    createData(2, 237, 9.0, 37, 4.3),
-    createData(3, 262, 16.0, 24, 6.0),
-    createData(4, 305, 3.7, 67, 4.3),
-    createData(5, 356, 16.0, 49, 3.9),
-  ];
   return (
     <>
-
-
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2}>
-        <Grid item xs={3} />
-        <Grid item xs={6}>
-          <Typography variant="h5" sx={{textAlign: "left", marginTOp: "1em"}}> 주문 현황 </Typography>
+        <Grid item xs={2} />
+        <Grid item xs={8}>
+          <Typography variant="h5" sx={{textAlign: "left", marginTop: "1.5em"}}> 주문 현황 </Typography>
         </Grid>
-        <Grid item xs={3} />
+        <Grid item xs={2} />
 
-        <Grid item xs={3} />
-        <Grid item xs={6}>
+        <Grid item xs={2} />
+        <Grid item xs={8}>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 500 }} aria-label="customized table">
+            <Table sx={{ minWidth: 1130 }} aria-label="customized table">
               <TableHead>
                 <TableRow>
                   <StyledTableCell>고객 아이디</StyledTableCell>
-                  <StyledTableCell align="right">주소</StyledTableCell>
-                  <StyledTableCell align="right">상세 주소</StyledTableCell>
-                  <StyledTableCell align="right">총 주문 금액</StyledTableCell>
-                  <StyledTableCell align="right">주문 일시</StyledTableCell>
+                  <StyledTableCell align="center">주소</StyledTableCell>
+                  <StyledTableCell align="center">상세 주소</StyledTableCell>
+                  <StyledTableCell align="center">총 주문 금액</StyledTableCell>
+                  <StyledTableCell align="center">주문 일시</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <StyledTableRow key={row.name}>
+                {orders?.slice(startIdx, startIdx + COUNT_PER_PAGE).map((order) => (
+                  <StyledTableRow key={order.id}>
                     <StyledTableCell  component="th" scope="row">
-                      {row.name}
+                      {order.customerId}
                     </StyledTableCell>
-                    <StyledTableCell align="right">{row.calories}</StyledTableCell>
-                    <StyledTableCell align="right">{row.fat}</StyledTableCell>
-                    <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-                    <StyledTableCell align="right">{row.protein}</StyledTableCell>
+                    <StyledTableCell align="left">{order.address1}</StyledTableCell>
+                    <StyledTableCell align="left">{order.address2}</StyledTableCell>
+                    <StyledTableCell align="right">{order.totalPrice}</StyledTableCell>
+                    <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
+          {orders && <StyledPagination count={totalCount} page={page} style={{margin: '2em auto'}} onChange={onChangePage}/>}
         </Grid>
-        <Grid item xs={3} />
+
+        <Grid item xs={2} />
       </Grid>
+
     </Box>
     </>
   );
