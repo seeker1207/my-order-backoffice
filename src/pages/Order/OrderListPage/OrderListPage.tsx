@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Pagination, styled} from "@mui/material";
+import {Button, Pagination, styled} from "@mui/material";
 import { tableCellClasses } from '@mui/material/TableCell';
 import { paginationClasses } from "@mui/material";
 import {
@@ -8,6 +8,7 @@ import {
 import useSWR from 'swr';
 import {getOrderList} from "../../../api/orderApi";
 import {Order} from "../../../model/modelType";
+import OrderFormModal from "../../../components/Modal/OrderFormModal";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -34,6 +35,14 @@ const StyledPagination = styled(Pagination)`
     justify-content: center;
   }
 `
+
+const StyledButton = styled(Button)(({theme}) =>`
+  float: right;
+  background-color: ${theme.palette.common.black};
+  :hover {
+    background-color: gray;
+  }
+`)
 const COUNT_PER_PAGE = 20;
 
 function getTotalCount(length: number){
@@ -46,6 +55,7 @@ function OrderListPage() {
   const [page, setPage] = useState(1);
   const [startIdx, setStartIdx] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const onChangePage = (event: React.ChangeEvent<unknown>, targetPage: number) => {
     setPage(targetPage);
@@ -67,9 +77,11 @@ function OrderListPage() {
         <Grid item xs={2} />
         <Grid item xs={8}>
           <Typography variant="h5" sx={{textAlign: "left", marginTop: "1.5em"}}> 주문 현황 </Typography>
+          <StyledButton variant="contained" onClick={() => setModalOpen(true)}>주문 생성하기</StyledButton>
+          <OrderFormModal open={modalOpen} setOpen={setModalOpen}/>
         </Grid>
-        <Grid item xs={2} />
-
+        <Grid item xs={2}>
+        </Grid>
         <Grid item xs={2} />
         <Grid item xs={8}>
           <TableContainer component={Paper}>
