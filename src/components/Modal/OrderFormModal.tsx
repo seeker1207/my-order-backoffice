@@ -1,9 +1,7 @@
 import React, {useState} from 'react';
 import {
   Box,
-  Button,
   FormControl,
-  FormHelperText,
   Input,
   InputLabel,
   MenuItem,
@@ -11,6 +9,9 @@ import {
   TextField,
   Typography
 } from "@mui/material";
+import useSWR from "swr";
+import {userApi} from "../../api";
+import {User} from "../../model/modelType";
 
 const style = {
   position: 'absolute' as const,
@@ -24,7 +25,8 @@ const style = {
   p: 4,
 }
 function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>}) {
-
+  const {data: users, error} = useSWR<User[], Error>('users', userApi.getUserList);
+  const [currentName, setCurrentName] = useState('');
   return (
     <div>
       <Modal
@@ -38,10 +40,10 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
             select
             label="주문자 명"
             helperText="유저리스트에서 주문할 사람를 선택해주세요"
+            value={currentName}
           >
-            <MenuItem value={"가나다"}>11</MenuItem>
-            <MenuItem value={"루루루"}>22</MenuItem>
-            <MenuItem value={"dhdhdh"}>33</MenuItem>
+            {users?.map((user) =>
+              <MenuItem key={user.id} value={user.name}>{user.name}</MenuItem>)}
           </TextField>
             <FormControl fullWidth style={{marginTop:'1em'}}>
               <InputLabel htmlFor="my-input">배송지 주소</InputLabel>

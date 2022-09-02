@@ -8,4 +8,9 @@ interface Order {
   createdAt: string,
 }
 
-export type {Order}
+interface User {
+  id: number,
+  name: string,
+  createdAt: string,
+}
+export type {Order, User}

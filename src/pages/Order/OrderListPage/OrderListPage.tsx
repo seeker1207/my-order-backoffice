@@ -6,7 +6,7 @@ import {
   Box, Paper, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography,TableContainer
 } from '@mui/material';
 import useSWR from 'swr';
-import {getOrderList} from "../../../api/orderApi";
+import {orderApi} from "../../../api";
 import {Order} from "../../../model/modelType";
 import OrderFormModal from "../../../components/Modal/OrderFormModal";
 
@@ -51,7 +51,7 @@ function getTotalCount(length: number){
 }
 
 function OrderListPage() {
-  const { data: orders, error } = useSWR<Order[], Error>('orders', getOrderList)
+  const { data: orders, error } = useSWR<Order[], Error>('orders', orderApi.getOrderList)
   const [page, setPage] = useState(1);
   const [startIdx, setStartIdx] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
