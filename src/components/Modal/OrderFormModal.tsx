@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {ChangeEventHandler, FormEventHandler, useState} from 'react';
 import {
   Box, Button,
   FormControl,
@@ -10,9 +10,10 @@ import {
   Typography
 } from "@mui/material";
 import useSWR from "swr";
-import {userApi} from "../../api";
+import {userApi, orderApi} from "../../api";
 import {User} from "../../model/modelType";
 import DefaultButton from "../Button/defaultButton";
+import useInput from "../../hooks/useInput";
 
 const style = {
   position: 'absolute' as const,
@@ -27,9 +28,25 @@ const style = {
 }
 function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>}) {
   const {data: users, error} = useSWR<User[], Error>('users', userApi.getUserList);
-  const [currentName, setCurrentName] = useState('');
-  const onChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentName(event.target.value);
+  const [currentName, setName] = useState('');
+  const [customerId, setCustomerId] = useState(0);
+  const [address1, onChangeAddress1] = useInput('');
+  const [address2, onChangeAddress2] = useInput('');
+  const [totalPrice, onChangeTotalPrice] = useInput('');
+
+  const onChangeName: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+    const currentName = event.target.value;
+    setName(currentName);
+    const targetUser = users?.find((user) => user.name === currentName);
+    if (targetUser) setCustomerId(targetUser.id);
+  }
+  const onSubmitOrder = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const targetUser = users?.find((user) => user.name !== currentName);
+    if (targetUser) setCustomerId(targetUser.id);
+
+    console.log(customerId, address1, address2, totalPrice);
+
   }
   return (
     <div>
@@ -39,7 +56,7 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
         aria-labelledby="modal-order-form"
       >
         <Box sx={style}>
-          <form>
+          <form onSubmit={onSubmitOrder}>
             <Typography variant="h5" id="modal-order-form" style={{marginBottom: '1.5em'}}>주문 생성</Typography>
             <TextField
               select
@@ -53,12 +70,16 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
                 <MenuItem key={user.id} value={user.name}>{user.name}</MenuItem>)}
             </TextField>
               <FormControl required fullWidth style={{marginTop:'1em'}}>
-                <InputLabel htmlFor="my-input">배송지 주소</InputLabel>
-                <Input id="my-input" aria-describedby="my-helper-text" />
+                <InputLabel htmlFor="my-address">배송지 주소</InputLabel>
+                <Input value={address1} id="my-address" onChange={onChangeAddress1}/>
               </FormControl>
               <FormControl required fullWidth style={{marginTop:'1em'}}>
-                <InputLabel htmlFor="my-input">주문 금액</InputLabel>
-                <Input type="number" id="my-input" aria-describedby="my-helper-text" />
+                <InputLabel htmlFor="my-detail-address">상세 주소</InputLabel>
+                <Input value={address2} id="my-detail-address" onChange={onChangeAddress2} />
+              </FormControl>
+              <FormControl required fullWidth style={{marginTop:'1em'}}>
+                <InputLabel htmlFor="my-total-price">주문 금액</InputLabel>
+                <Input value={totalPrice} id="my-total-price" type="number" onChange={onChangeTotalPrice}/>
               </FormControl>
             <DefaultButton type="submit" onClickMethod={() => 1} text={"생성하기"} />
           </form>
