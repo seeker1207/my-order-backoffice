@@ -9,7 +9,7 @@ import {
   TextField,
   Typography
 } from "@mui/material";
-import useSWR from "swr";
+import useSWR, {useSWRConfig} from "swr";
 import {userApi, orderApi} from "../../api";
 import {User} from "../../model/modelType";
 import DefaultButton from "../Button/defaultButton";
@@ -30,9 +30,10 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
   const {data: users, error} = useSWR<User[], Error>('users', userApi.getUserList);
   const [currentName, setName] = useState('');
   const [customerId, setCustomerId] = useState(0);
-  const [address1, onChangeAddress1] = useInput('');
-  const [address2, onChangeAddress2] = useInput('');
-  const [totalPrice, onChangeTotalPrice] = useInput('');
+  const [address1, onChangeAddress1, setAddress1] = useInput('');
+  const [address2, onChangeAddress2, setAddress2] = useInput('');
+  const [totalPrice, onChangeTotalPrice, setTotalPrice] = useInput('');
+  const { mutate } = useSWRConfig();
 
   const onChangeName: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const currentName = event.target.value;
@@ -42,8 +43,20 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
   }
   const onSubmitOrder = async (event: React.FormEvent) => {
     event.preventDefault();
-    const targetUser = users?.find((user) => user.name !== currentName);
-    if (targetUser) setCustomerId(targetUser.id);
+    const priceNumber = parseInt(totalPrice)
+    try {
+      await orderApi.postOrder({customerId, address1, address2, totalPrice: priceNumber});
+      await mutate('orders');
+      setOpen(false);
+      setName('');
+      setCustomerId(0);
+      setAddress1('');
+      setAddress2('');
+      setTotalPrice('');
+    } catch(e) {
+      alert('주문 생성에 실패하였습니다.')
+    }
+
 
     console.log(customerId, address1, address2, totalPrice);
 

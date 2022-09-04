@@ -13,7 +13,7 @@ const getOrderList = () => {
 }
 
 const postOrder = (targetOrder: postOrderType) => {
-  return axios.post<Order[]>('/orders').then(res => res.data);
+  return axios.post<Order[]>('/orders', targetOrder).then(res => res.data);
 }
 
 const orderApi = {getOrderList, postOrder}
