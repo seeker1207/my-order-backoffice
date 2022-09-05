@@ -42,7 +42,7 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
     if (targetUser) setCustomerId(targetUser.id);
   }
 
-  const onSubmitOrder = useCallback(async (event: FormEvent) => {
+  const onSubmitOrder = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const priceNumber = parseInt(totalPrice)
     try {

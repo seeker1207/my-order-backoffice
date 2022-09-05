@@ -10,6 +10,7 @@ import {orderApi} from "../../../api";
 import {Order} from "../../../model/modelType";
 import OrderFormModal from "../../../components/Modal/OrderFormModal";
 import DefaultButton from "../../../components/Button/defaultButton";
+import {useNavigate} from "react-router-dom";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -22,8 +23,21 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&': {
+    cursor: 'pointer',
+  },
+
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
+  },
+  '&:hover': {
+    backgroundColor: theme.palette.grey.A700,
+  },
+  '&:hover td': {
+    color: theme.palette.common.white,
+  },
+  '&:hover th': {
+    color: theme.palette.common.white,
   },
   // hide last border
   '&:last-child td, &:last-child th': {
@@ -45,6 +59,7 @@ function getTotalCount(length: number){
 }
 
 function OrderListPage() {
+  const navigate = useNavigate();
   const { data: orders, error } = useSWR<Order[], Error>('orders', orderApi.getOrderList)
   const [page, setPage] = useState(1);
   const [startIdx, setStartIdx] = useState(0);
@@ -91,7 +106,7 @@ function OrderListPage() {
               </TableHead>
               <TableBody>
                 {orders?.slice(startIdx, startIdx + COUNT_PER_PAGE).map((order) => (
-                  <StyledTableRow key={order.id}>
+                  <StyledTableRow key={order.id} onClick={() => navigate(`/orders/${order.id}`)}>
                     <StyledTableCell  component="th" scope="row">
                       {order.customerId}
                     </StyledTableCell>
