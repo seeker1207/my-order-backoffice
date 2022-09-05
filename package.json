@@ -13,6 +13,7 @@
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "@types/react-router-dom": "^5.3.3",
     "axios": "^0.27.2",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-airbnb": "^0.0.1-security",

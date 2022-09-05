@@ -1,4 +1,4 @@
-import React, {ChangeEventHandler, FormEventHandler, useState} from 'react';
+import React, {ChangeEventHandler, FormEvent, useCallback, useState} from 'react';
 import {
   Box, Button,
   FormControl,
@@ -35,37 +35,42 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
   const [totalPrice, onChangeTotalPrice, setTotalPrice] = useInput('');
   const { mutate } = useSWRConfig();
 
-  const onChangeName: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+  const onChangeName: ChangeEventHandler<HTMLInputElement> = (event) => {
     const currentName = event.target.value;
     setName(currentName);
     const targetUser = users?.find((user) => user.name === currentName);
     if (targetUser) setCustomerId(targetUser.id);
   }
-  const onSubmitOrder = async (event: React.FormEvent) => {
+
+  const onSubmitOrder = useCallback(async (event: FormEvent) => {
     event.preventDefault();
     const priceNumber = parseInt(totalPrice)
     try {
-      await orderApi.postOrder({customerId, address1, address2, totalPrice: priceNumber});
+      await orderApi.saveOrder({customerId, address1, address2, totalPrice: priceNumber});
       await mutate('orders');
-      setOpen(false);
-      setName('');
-      setCustomerId(0);
-      setAddress1('');
-      setAddress2('');
-      setTotalPrice('');
+      onClose();
+
     } catch(e) {
       alert('주문 생성에 실패하였습니다.')
     }
-
-
     console.log(customerId, address1, address2, totalPrice);
+  }, [totalPrice, customerId, address1, address2])
 
-  }
+  const onClose = useCallback(() => {
+    setOpen(false);
+    setName('');
+    setCustomerId(0);
+    setAddress1('');
+    setAddress2('');
+    setTotalPrice('');
+  }, [])
+
+
   return (
     <div>
       <Modal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={onClose}
         aria-labelledby="modal-order-form"
       >
         <Box sx={style}>
