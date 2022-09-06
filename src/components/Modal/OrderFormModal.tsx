@@ -13,7 +13,7 @@ import {userApi, orderApi} from "../../api";
 import {User} from "../../model/modelType";
 import DefaultButton from "../Button/defaultButton";
 import useInput from "../../hooks/useInput";
-import {StyledBox} from "./OrderFormModal.styleds";
+import {StyledBox} from "./OrderFormModal.styles";
 
 const style = {
   width: 700,

@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
-  Box, Paper, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography,TableContainer
+  Box, Grid, Typography
 } from '@mui/material';
 import useSWR from 'swr';
 import {orderApi} from "../../../api";
@@ -8,8 +8,8 @@ import {Order} from "../../../model/modelType";
 import OrderFormModal from "../../../components/Modal/OrderFormModal";
 import DefaultButton from "../../../components/Button/defaultButton";
 import {useNavigate} from "react-router-dom";
-import {changeDateFormat, numberToComma} from "../../../util/formatUtil";
-import {StyledPagination, StyledTableCell, StyledTableRow} from "./OrderListPage.styles";
+import {StyledPagination} from "./OrderListPage.styles";
+import OrderTable from "../../../components/Table/OrderTable";
 
 const COUNT_PER_PAGE = 20;
 
@@ -19,7 +19,6 @@ function getTotalCount(length: number){
 }
 
 function OrderListPage() {
-  const navigate = useNavigate();
   const { data: orders, error } = useSWR<Order[], Error>('orders', orderApi.getOrderList)
   const [page, setPage] = useState(1);
   const [startIdx, setStartIdx] = useState(0);
@@ -53,35 +52,9 @@ function OrderListPage() {
         </Grid>
         <Grid item xs={2} />
         <Grid item xs={8}>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 1130 }} aria-label="customized table">
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell>고객 아이디</StyledTableCell>
-                  <StyledTableCell align="center">주소</StyledTableCell>
-                  <StyledTableCell align="center">상세 주소</StyledTableCell>
-                  <StyledTableCell align="center">총 주문 금액</StyledTableCell>
-                  <StyledTableCell align="center">주문 일시</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {orders?.slice(startIdx, startIdx + COUNT_PER_PAGE).map((order) => (
-                  <StyledTableRow key={order.id} onClick={() => navigate(`/orders/${order.id}`)}>
-                    <StyledTableCell  component="th" scope="row">
-                      {order.customerId}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">{order.address1}</StyledTableCell>
-                    <StyledTableCell align="left">{order.address2}</StyledTableCell>
-                    <StyledTableCell align="right">{numberToComma(order.totalPrice)}</StyledTableCell>
-                    <StyledTableCell align="center">{changeDateFormat(order.createdAt)}</StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <OrderTable orders={orders?.slice(startIdx, startIdx + COUNT_PER_PAGE)} />
           {orders && <StyledPagination count={totalCount} page={page} style={{margin: '2em auto'}} onChange={onChangePage}/>}
         </Grid>
-
         <Grid item xs={2} />
       </Grid>
 
