@@ -2,8 +2,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   Box,
   Grid,
-  styled,
-  TextField,
   Typography
 } from "@mui/material";
 import DefaultButton from "../../../components/Button/defaultButton";
@@ -13,10 +11,9 @@ import {orderApi} from "../../../api";
 import {useParams} from "react-router-dom";
 import useInput from "../../../hooks/useInput";
 import {changeDateFormat, numberToComma} from "../../../util/formatUtil";
+import {StyledTextField} from "./OrderDetailPage.styles";
 
-const StyledTextField = styled(TextField)`
-  margin-bottom: 2em;
-`
+
 
 function OrderDetailPage() {
   const { data: orders, error } = useSWR<Order[], Error>('orders', orderApi.getOrderList)

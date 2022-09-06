@@ -1,7 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Button, Pagination, styled} from "@mui/material";
-import { tableCellClasses } from '@mui/material/TableCell';
-import { paginationClasses } from "@mui/material";
 import {
   Box, Paper, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography,TableContainer
 } from '@mui/material';
@@ -12,45 +9,7 @@ import OrderFormModal from "../../../components/Modal/OrderFormModal";
 import DefaultButton from "../../../components/Button/defaultButton";
 import {useNavigate} from "react-router-dom";
 import {changeDateFormat, numberToComma} from "../../../util/formatUtil";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&': {
-    cursor: 'pointer',
-  },
-
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&:hover': {
-    backgroundColor: theme.palette.grey.A700,
-  },
-  '&:hover td': {
-    color: theme.palette.common.white,
-  },
-  '&:hover th': {
-    color: theme.palette.common.white,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
-
-const StyledPagination = styled(Pagination)`
-  .${paginationClasses.ul} {
-    justify-content: center;
-  }
-`
+import {StyledPagination, StyledTableCell, StyledTableRow} from "./OrderListPage.styles";
 
 const COUNT_PER_PAGE = 20;
 

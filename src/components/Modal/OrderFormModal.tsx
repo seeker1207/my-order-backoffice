@@ -1,6 +1,5 @@
 import React, {ChangeEventHandler, FormEvent, useCallback, useState} from 'react';
 import {
-  Box, Button,
   FormControl,
   Input,
   InputLabel,
@@ -14,18 +13,14 @@ import {userApi, orderApi} from "../../api";
 import {User} from "../../model/modelType";
 import DefaultButton from "../Button/defaultButton";
 import useInput from "../../hooks/useInput";
+import {StyledBox} from "./OrderFormModal.styleds";
 
 const style = {
-  position: 'absolute' as const,
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
   width: 700,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
   boxShadow: 24,
   p: 4,
 }
+
 function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>>}) {
   const {data: users, error} = useSWR<User[], Error>('users', userApi.getUserList);
   const [currentName, setName] = useState('');
@@ -35,12 +30,12 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
   const [totalPrice, onChangeTotalPrice, setTotalPrice] = useInput('');
   const { mutate } = useSWRConfig();
 
-  const onChangeName: ChangeEventHandler<HTMLInputElement> = (event) => {
+  const onChangeName: ChangeEventHandler<HTMLInputElement> = useCallback((event) => {
     const currentName = event.target.value;
     setName(currentName);
     const targetUser = users?.find((user) => user.name === currentName);
     if (targetUser) setCustomerId(targetUser.id);
-  }
+  }, [users]);
 
   const onSubmitOrder = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,7 +48,7 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
     } catch(e) {
       alert('주문 생성에 실패하였습니다.')
     }
-    console.log(customerId, address1, address2, totalPrice);
+    // console.log(customerId, address1, address2, totalPrice);
   }, [totalPrice, customerId, address1, address2])
 
   const onClose = useCallback(() => {
@@ -73,7 +68,7 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
         onClose={onClose}
         aria-labelledby="modal-order-form"
       >
-        <Box sx={style}>
+        <StyledBox sx={style}>
           <form onSubmit={onSubmitOrder}>
             <Typography variant="h5" id="modal-order-form" style={{marginBottom: '1.5em'}}>주문 생성</Typography>
             <TextField
@@ -101,7 +96,7 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
               </FormControl>
             <DefaultButton type="submit" onClickMethod={() => 1} text={"생성하기"} />
           </form>
-        </Box>
+        </StyledBox>
       </Modal>
     </div>
   );
