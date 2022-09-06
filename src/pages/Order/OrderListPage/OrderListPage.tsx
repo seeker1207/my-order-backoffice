@@ -7,7 +7,6 @@ import {orderApi} from "../../../api";
 import {Order} from "../../../model/modelType";
 import OrderFormModal from "../../../components/Modal/OrderFormModal";
 import DefaultButton from "../../../components/Button/defaultButton";
-import {useNavigate} from "react-router-dom";
 import {StyledPagination} from "./OrderListPage.styles";
 import OrderTable from "../../../components/Table/OrderTable";
 
@@ -36,7 +35,7 @@ function OrderListPage() {
     }
   }, [orders])
 
-  console.log(startIdx, startIdx + COUNT_PER_PAGE);
+  // console.log(startIdx, startIdx + COUNT_PER_PAGE);
 
   return (
     <>
@@ -45,7 +44,7 @@ function OrderListPage() {
         <Grid item xs={2} />
         <Grid item xs={8}>
           <Typography variant="h5" sx={{textAlign: "left", marginTop: "1.5em"}}> 주문 현황 </Typography>
-          <DefaultButton onClickMethod={() => setModalOpen(true)} text={"주문 생성하기"}></DefaultButton>
+          <DefaultButton role="orderButton" onClickMethod={() => setModalOpen(true)} text={"주문 생성하기"}></DefaultButton>
           <OrderFormModal open={modalOpen} setOpen={setModalOpen}/>
         </Grid>
         <Grid item xs={2}>

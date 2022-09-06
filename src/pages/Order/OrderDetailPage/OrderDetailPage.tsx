@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useRef, useState} from 'react';
 import {
   Box,
   Grid,
@@ -13,15 +13,13 @@ import useInput from "../../../hooks/useInput";
 import {changeDateFormat, numberToComma} from "../../../util/formatUtil";
 import {StyledTextField} from "./OrderDetailPage.styles";
 
-
-
 function OrderDetailPage() {
   const { data: orders, error } = useSWR<Order[], Error>('orders', orderApi.getOrderList)
   const { orderId } = useParams();
   const [readMode, setReadMode] = useState(true);
   const [address1, onChangeAddress1, setAddress1] = useInput('');
   const [address2, onChangeAddress2, setAddress2] = useInput('');
-  const [totalPrice, onChangeTotalPrice, setTotalPrice] = useInput('');
+  const [totalPrice, setTotalPrice] = useState(0);
   const [createdAt, onChangeCreatedAt, setCreatedAt] = useInput('');
   const textField = useRef<HTMLInputElement>(null);
   const targetOrder = useRef({} as Order);
@@ -31,19 +29,26 @@ function OrderDetailPage() {
       targetOrder.current = orders.find((order) => order.id === parseInt(orderId as string)) as Order;
       setAddress1(targetOrder.current.address1);
       setAddress2(targetOrder.current.address2);
-      setTotalPrice(targetOrder.current.totalPrice + '');
+      setTotalPrice(targetOrder.current.totalPrice);
       setCreatedAt(targetOrder.current.createdAt);
     }
 
   }, [orders])
 
+  const onChangeTotalPrice = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === '') {
+      setTotalPrice(0);
+    } else {
+      setTotalPrice(parseInt(e.target.value.replaceAll(',','')));
+    }
+  },[])
   const onClickModifyOrSaveButton = async () => {
     if (readMode) {
       setReadMode(false);
       textField.current?.focus();
     } else {
       try {
-        await orderApi.modifyOrder({customerId: targetOrder.current.customerId, address1, address2, totalPrice: parseInt(totalPrice)}, parseInt(orderId as string));
+        await orderApi.modifyOrder({customerId: targetOrder.current.customerId, address1, address2, totalPrice}, parseInt(orderId as string));
         await mutate('orders');
         setReadMode(true);
       } catch (e) {
@@ -58,7 +63,7 @@ function OrderDetailPage() {
         <Grid item xs={2} />
         <Grid item xs={8}>
           <Typography variant="h5" sx={{textAlign: "left", marginTop: "1.5em"}}> 주문 상세 정보 </Typography>
-          <DefaultButton onClickMethod={onClickModifyOrSaveButton} text={readMode? "수정": "저장"}></DefaultButton>
+          <DefaultButton role="modifyButton" onClickMethod={onClickModifyOrSaveButton} text={readMode? "수정": "저장"}></DefaultButton>
         </Grid>
         <Grid item xs={2}>
         </Grid>
@@ -70,7 +75,7 @@ function OrderDetailPage() {
               <StyledTextField inputRef={textField} label="주소" fullWidth value={address1} InputProps={{readOnly: readMode}} onChange={onChangeAddress1}/>
               <StyledTextField label="상세 주소" fullWidth value={address2} InputProps={{readOnly: readMode}} onChange={onChangeAddress2}/>
               <div>
-                <StyledTextField label="주문 금액" value={numberToComma(parseInt(totalPrice))} InputProps={{readOnly: readMode}} onChange={onChangeTotalPrice}/>
+                <StyledTextField label="주문 금액" value={numberToComma(totalPrice)} InputProps={{readOnly: readMode}} onChange={onChangeTotalPrice}/>
               </div>
               <StyledTextField label="주문 생성일" value={changeDateFormat(createdAt)} InputProps={{readOnly: true}}/>
             </div>

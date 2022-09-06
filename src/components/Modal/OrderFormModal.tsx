@@ -67,34 +67,36 @@ function OrderFormModal({open, setOpen} : {open: boolean, setOpen: React.Dispatc
         open={open}
         onClose={onClose}
         aria-labelledby="modal-order-form"
+        role="postOrderModal"
       >
         <StyledBox sx={style}>
           <form onSubmit={onSubmitOrder}>
             <Typography variant="h5" id="modal-order-form" style={{marginBottom: '1.5em'}}>주문 생성</Typography>
             <TextField
               select
-              label="주문자 명"
+              label="주문자 이름"
               helperText="유저리스트에서 주문할 사람를 선택해주세요"
               value={currentName}
               onChange={onChangeName}
               required
+              inputProps={{ "data-testid": "my-order-person" }}
             >
               {users?.map((user) =>
-                <MenuItem key={user.id} value={user.name}>{user.name}</MenuItem>)}
+                <MenuItem role="my-order-person" key={user.id} value={user.name}>{user.name}</MenuItem>)}
             </TextField>
               <FormControl required fullWidth style={{marginTop:'1em'}}>
                 <InputLabel htmlFor="my-address">배송지 주소</InputLabel>
-                <Input value={address1} id="my-address" onChange={onChangeAddress1}/>
+                <Input value={address1} id="my-address" onChange={onChangeAddress1} inputProps={{ "data-testid": "my-address" }}/>
               </FormControl>
               <FormControl required fullWidth style={{marginTop:'1em'}}>
                 <InputLabel htmlFor="my-detail-address">상세 주소</InputLabel>
-                <Input value={address2} id="my-detail-address" onChange={onChangeAddress2} />
+                <Input value={address2} id="my-detail-address" onChange={onChangeAddress2} inputProps={{ "data-testid": "my-detail-address" }}/>
               </FormControl>
               <FormControl required fullWidth style={{marginTop:'1em'}}>
                 <InputLabel htmlFor="my-total-price">주문 금액</InputLabel>
-                <Input value={totalPrice} id="my-total-price" type="number" onChange={onChangeTotalPrice}/>
+                <Input value={totalPrice} id="my-total-price" type="number" onChange={onChangeTotalPrice} inputProps={{ "data-testid": "my-total-price" }}/>
               </FormControl>
-            <DefaultButton type="submit" onClickMethod={() => 1} text={"생성하기"} />
+            <DefaultButton role="postButton" type="submit" onClickMethod={() => 1} text={"생성하기"} />
           </form>
         </StyledBox>
       </Modal>
