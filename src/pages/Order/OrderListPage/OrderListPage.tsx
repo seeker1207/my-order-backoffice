@@ -11,6 +11,7 @@ import {Order} from "../../../model/modelType";
 import OrderFormModal from "../../../components/Modal/OrderFormModal";
 import DefaultButton from "../../../components/Button/defaultButton";
 import {useNavigate} from "react-router-dom";
+import {changeDateFormat, numberToComma} from "../../../util/formatUtil";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -112,8 +113,8 @@ function OrderListPage() {
                     </StyledTableCell>
                     <StyledTableCell align="left">{order.address1}</StyledTableCell>
                     <StyledTableCell align="left">{order.address2}</StyledTableCell>
-                    <StyledTableCell align="right">{order.totalPrice}</StyledTableCell>
-                    <StyledTableCell align="center">{order.createdAt}</StyledTableCell>
+                    <StyledTableCell align="right">{numberToComma(order.totalPrice)}</StyledTableCell>
+                    <StyledTableCell align="center">{changeDateFormat(order.createdAt)}</StyledTableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>

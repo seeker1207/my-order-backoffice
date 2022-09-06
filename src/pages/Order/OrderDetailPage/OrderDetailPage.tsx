@@ -12,6 +12,7 @@ import {Order} from "../../../model/modelType";
 import {orderApi} from "../../../api";
 import {useParams} from "react-router-dom";
 import useInput from "../../../hooks/useInput";
+import {changeDateFormat, numberToComma} from "../../../util/formatUtil";
 
 const StyledTextField = styled(TextField)`
   margin-bottom: 2em;
@@ -72,9 +73,9 @@ function OrderDetailPage() {
               <StyledTextField inputRef={textField} label="주소" fullWidth value={address1} InputProps={{readOnly: readMode}} onChange={onChangeAddress1}/>
               <StyledTextField label="상세 주소" fullWidth value={address2} InputProps={{readOnly: readMode}} onChange={onChangeAddress2}/>
               <div>
-                <StyledTextField label="주문 금액" value={totalPrice} InputProps={{readOnly: readMode}} onChange={onChangeTotalPrice}/>
+                <StyledTextField label="주문 금액" value={numberToComma(parseInt(totalPrice))} InputProps={{readOnly: readMode}} onChange={onChangeTotalPrice}/>
               </div>
-              <StyledTextField label="주문 생성일" value={createdAt} InputProps={{readOnly: true}}/>
+              <StyledTextField label="주문 생성일" value={changeDateFormat(createdAt)} InputProps={{readOnly: true}}/>
             </div>
           }
 
